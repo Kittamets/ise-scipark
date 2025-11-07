@@ -1,29 +1,39 @@
 import mongoose from "mongoose";
 
 const parkingZoneSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
   zoneName: {
     type: String,
     required: true,
-    unique: true, // ชื่อโซนไม่ควรซ้ำกัน
+    unique: true,
     trim: true,
+  },
+  description: {
+    type: String,
+    default: "",
+  },
+  building: {
+    type: String,
+    default: "",
   },
   totalSpots: {
     type: Number,
-    required: true, // จำนวนช่องจอดทั้งหมดในโซนนี้
+    required: true,
   },
-  // เราจะคำนวณช่องที่ว่างจากการนับใน ParkingSpot แทน
-  // availableSpots: Number, 
   hourlyRate: {
     type: Number,
-    required: true, // ค่าบริการจอดรายชั่วโมง
-    default: 10,
+    default: 20,
   },
   bookingRate: {
     type: Number,
-    required: true, // ค่าธรรมเนียมการจอง
-    default: 20,
+    default: 0,
   },
 }, { timestamps: true });
+
+parkingZoneSchema.index({ zoneName: 1 });
 
 const ParkingZone = mongoose.models.ParkingZone || mongoose.model("ParkingZone", parkingZoneSchema);
 export default ParkingZone;

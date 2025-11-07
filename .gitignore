@@ -9,6 +9,14 @@ jspm_packages/
 .env.test.local
 .env.production.local
 
+# Backend environment
+backend/.env
+backend/.env.local
+
+# Frontend environment
+frontend/.env
+frontend/.env.local
+
 # Logs
 logs
 *.log
@@ -25,6 +33,14 @@ coverage/
 dist/
 build/
 out/
+
+# Frontend build
+frontend/dist/
+frontend/build/
+
+# Backend build
+backend/dist/
+backend/build/
 
 # IDEs and editors
 .idea/

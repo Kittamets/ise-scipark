@@ -9,7 +9,7 @@ const bookingSchema = new mongoose.Schema({
   vehicle: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Vehicle",
-    required: true,
+    default: null,
   },
   spot: {
     type: mongoose.Schema.Types.ObjectId,
@@ -19,24 +19,39 @@ const bookingSchema = new mongoose.Schema({
   zone: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "ParkingZone",
-    required: true,
+    default: null,
+  },
+  floor: {
+    type: String,
+    default: "ชั้น 1",
   },
   startTime: {
-    type: Date, // เวลาที่เริ่มจอง
+    type: Date,
     required: true,
   },
   endTime: {  
-    type: Date, // เวลาที่การจองสิ้นสุด (จะอัปเดตตอนรถเข้าจอด)
+    type: Date,
+    default: null,
+  },
+  cost: {
+    type: Number,
+    default: 0,
   },
   totalCost: {
-    type: Number, // ค่าใช้จ่ายทั้งหมด
+    type: Number,
+    default: 0,
   },
   status: {
     type: String,
-    enum: ["pending", "active", "completed", "cancelled"], // สถานะการจอง
-    default: "",
+    enum: ["pending", "active", "completed", "cancelled"],
+    default: "active",
   },
 }, { timestamps: true });
+
+// Indexes for faster queries
+bookingSchema.index({ user: 1, status: 1 });
+bookingSchema.index({ spot: 1 });
+bookingSchema.index({ startTime: -1 });
 
 const Booking = mongoose.models.Booking || mongoose.model("Booking", bookingSchema);
 export default Booking;

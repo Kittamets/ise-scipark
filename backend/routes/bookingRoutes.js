@@ -1,12 +1,35 @@
 import express from "express";
-import { createBooking, updateBookingStatus} from "../controllers/bookingController.js";
-import userAuth from "../middleware/userAuth.js";
+import {
+  createBooking,
+  getActiveBooking,
+  completeBooking,
+  cancelBooking,
+  getBookingHistory,
+  updateBookingStatus,
+} from "../controllers/bookingController.js";
+import { authenticateUser } from "../middleware/userAuth.js";
 
 const router = express.Router();
 
-router.post("/", userAuth, createBooking);
-router.put("/update", userAuth, updateBookingStatus);
+// All booking routes require authentication
+router.use(authenticateUser);
 
-// (ในอนาคตอาจจะมี GET /api/bookings เพื่อดูประวัติการจอง)
+// Create new booking
+router.post("/", createBooking);
+
+// Get active booking
+router.get("/active", getActiveBooking);
+
+// Get booking history
+router.get("/history", getBookingHistory);
+
+// Complete booking
+router.put("/:id/complete", completeBooking);
+
+// Cancel booking
+router.delete("/:id", cancelBooking);
+
+// Update booking status (legacy - admin function)
+router.put("/update", updateBookingStatus);
 
 export default router;

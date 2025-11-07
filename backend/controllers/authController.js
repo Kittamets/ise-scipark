@@ -7,85 +7,115 @@ import transporter from "../config/nodemailer.js";
 
 // Register new user
 const register = async (req, res) => {
-  const { username, password } = req.body;
+  const { name, email, username, password, phone } = req.body;
 
-  // Validate that username and password are provided
-  if (!username || !password) {
+  // Validate required fields
+  if (!name || !email || !password) {
     return res
       .status(400)
-      .json({ success: false, message: "Email and password are required." });
+      .json({ success: false, message: "กรุณากรอกข้อมูลให้ครบถ้วน" });
   }
 
   try {
     // Check if user already exists
-    // Replace User with your actual user model
-    const existingUser = await User.findOne({ username });
+    const existingUser = await User.findOne({ 
+      $or: [{ email }, { username: username || email }] 
+    });
+    
     if (existingUser) {
       return res
         .status(409)
-        .json({ success: false, message: "Email already registered." });
+        .json({ success: false, message: "อีเมลนี้ถูกใช้งานแล้ว" });
     }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create new user
-    const user = new User({ username, password: hashedPassword });
+    const user = new User({ 
+      name,
+      email,
+      username: username || email,
+      password: hashedPassword,
+      phone: phone || "",
+      rank: "Iron",
+      points: 0
+    });
     await user.save();
 
     // Generate JWT token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
+      expiresIn: "7d",
     });
+    
     res.cookie("token", token, {
-      // Set token in HTTP-only cookie
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    // Email options
-    const mailOptions = {
-      from: process.env.SENDER_EMAIL,
-      to: username,
-      subject: "Welcome to Our Service",
-      text: `Hello ${username},\n\nThank you for registering at our service!\n\nBest regards,\nTeam`,
-    };
+    // Send welcome email
+    try {
+      const mailOptions = {
+        from: process.env.SENDER_EMAIL,
+        to: email,
+        subject: "ยินดีต้อนรับสู่ SciPark",
+        text: `สวัสดี ${name},\n\nขอบคุณที่สมัครสมาชิก SciPark!\n\nคุณสามารถเริ่มจองที่จอดรถได้เลยตอนนี้\n\nทีมงาน SciPark`,
+      };
+      await transporter.sendMail(mailOptions);
+    } catch (emailError) {
+      console.error("Email error:", emailError);
+      // Continue even if email fails
+    }
 
-    // Send email
-    await transporter.sendMail(mailOptions);
-
-    return res
-      .status(201)
-      .json({ success: true, message: "User registered successfully." });
+    return res.status(201).json({ 
+      success: true, 
+      message: "สมัครสมาชิกสำเร็จ",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        username: user.username,
+        phone: user.phone,
+        rank: user.rank,
+        points: user.points
+      }
+    });
   } catch (error) {
+    console.error("Register error:", error);
     return res
       .status(500)
-      .json({ success: false, message: "Server error.", error: error.message });
+      .json({ success: false, message: "เกิดข้อผิดพลาด", error: error.message });
   }
 };
 
 // Login user
 const login = async (req, res) => {
-  const { username, password } = req.body;
+  const { email, username, password } = req.body;
 
-  // Validate that username and password are provided
-  if (!username || !password) {
+  // Validate that email/username and password are provided
+  if ((!email && !username) || !password) {
     return res
       .status(400)
-      .json({ success: false, message: "Email and password are required." });
+      .json({ success: false, message: "กรุณากรอกอีเมลและรหัสผ่าน" });
   }
 
   try {
-    // Find user by username
-    const user = await User.findOne({ username });
+    // Find user by email or username
+    const user = await User.findOne({ 
+      $or: [
+        { email: email || username }, 
+        { username: username || email }
+      ] 
+    });
 
     // Check if user exists
     if (!user) {
       return res.json({
         success: false,
-        message: "Invalid username or password",
+        message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
       });
     }
 
@@ -94,29 +124,42 @@ const login = async (req, res) => {
     if (!isMatch) {
       return res.json({
         success: false,
-        message: "Invalid username or password",
+        message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
       });
     }
 
     // Generate JWT token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
+      expiresIn: "7d",
     });
+    
     res.cookie("token", token, {
-      // Set token in HTTP-only cookie
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    return res // Successful login
-      .status(200)
-      .json({ success: true, message: "Login successfully." });
+    return res.status(200).json({ 
+      success: true, 
+      message: "เข้าสู่ระบบสำเร็จ",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        username: user.username,
+        phone: user.phone,
+        rank: user.rank,
+        points: user.points,
+        subscriptionExpiry: user.subscriptionExpiry
+      }
+    });
   } catch (error) {
-    return res // Server error
+    console.error("Login error:", error);
+    return res
       .status(500)
-      .json({ success: false, message: "Server error.", error: error.message });
+      .json({ success: false, message: "เกิดข้อผิดพลาด", error: error.message });
   }
 };
 
@@ -128,12 +171,11 @@ const logout = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
 
-    return res // Successful logout
+    return res
       .status(200)
-      .json({ success: true, message: "Logout successfully." });
+      .json({ success: true, message: "ออกจากระบบสำเร็จ" });
   } catch (error) {
     return res // Server error
       .status(500)

@@ -14,6 +14,8 @@ import authRouter from "./routes/authRoute.js"
 import vehicleRouter from "./routes/vehicleRoutes.js"
 import bookingRouter from "./routes/bookingRoutes.js"
 import parkingRouter from "./routes/parkingRoute.js"
+import privilegesRouter from "./routes/privilegesRoute.js"
+import userRouter from "./routes/userRoutes.js"
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -33,7 +35,7 @@ app.use(cookieParser());
 
 // Implement CORS with more specific configuration
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    origin: process.env.CLIENT_URL || 'http://localhost:5173', // Vite default port
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -64,6 +66,10 @@ app.use('/api/vehicles', vehicleRouter);
 app.use('/api/bookings', bookingRouter);
 // Parking routes
 app.use('/api/parking', parkingRouter);
+// Privileges routes
+app.use('/api/privileges', privilegesRouter);
+// User routes
+app.use('/api/user', userRouter);
 
 // Global error handler
 app.use((err, req, res, next) => {

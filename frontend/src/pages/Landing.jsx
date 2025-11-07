@@ -1,0 +1,275 @@
+import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
+import { Car, MapPin, Trophy, CheckCircle, Star, ArrowRight, Zap, Shield, Clock } from 'lucide-react'
+import Button from '../components/ui/Button'
+
+const Landing = () => {
+  const features = [
+    {
+      icon: Zap,
+      title: 'จองได้ทันที',
+      description: 'ระบบจองที่จอดแบบ Real-time ไม่ต้องรอนาน',
+      gradient: 'from-yellow-400 to-orange-500'
+    },
+    {
+      icon: Shield,
+      title: 'ปลอดภัย',
+      description: 'การชำระเงินที่ปลอดภัยและมั่นคง',
+      gradient: 'from-green-400 to-emerald-500'
+    },
+    {
+      icon: Clock,
+      title: 'ประหยัดเวลา',
+      description: 'ลดเวลาในการหาที่จอดได้ถึง 70%',
+      gradient: 'from-blue-400 to-cyan-500'
+    },
+  ]
+  
+  const testimonials = [
+    {
+      name: 'คุณสมชาย',
+      role: 'นักศึกษา',
+      content: 'ใช้งานง่ายมาก ประหยัดเวลาในการหาที่จอดได้เยอะเลย ไม่ต้องวนหาที่จอดอีกต่อไป',
+      rating: 5,
+      avatar: '👨‍🎓'
+    },
+    {
+      name: 'คุณสมหญิง',
+      role: 'อาจารย์',
+      content: 'ระบบดีมาก สะดวก รวดเร็ว แนะนำเลยค่ะ',
+      rating: 5,
+      avatar: '👩‍🏫'
+    },
+    {
+      name: 'คุณสมศักดิ์',
+      role: 'เจ้าหน้าที่',
+      content: 'ชอบระบบสิทธิพิเศษมาก คุ้มค่ากับการจ่ายเงินรายเดือน',
+      rating: 5,
+      avatar: '👨‍💼'
+    },
+  ]
+  
+  return (
+    <div className="min-h-screen">
+      {/* Navbar */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg shadow-md">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          <Link to="/" className="flex items-center gap-3 group">
+            <motion.div
+              whileHover={{ rotate: 360 }}
+              transition={{ duration: 0.5 }}
+              className="w-12 h-12 bg-gradient-to-br from-primary-500 to-secondary-600 rounded-2xl flex items-center justify-center shadow-lg"
+            >
+              <Car className="w-7 h-7 text-white" />
+            </motion.div>
+            <span className="text-2xl font-bold gradient-text">SciPark</span>
+          </Link>
+          
+          <Link to="/login">
+            <Button variant="primary" size="md">
+              เข้าสู่ระบบ
+            </Button>
+          </Link>
+        </div>
+      </nav>
+      
+      {/* Hero Section */}
+      <section className="pt-32 pb-20 px-6 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="space-y-8"
+            >
+              <div className="space-y-6">
+                <motion.h1 
+                  className="text-6xl lg:text-7xl font-bold leading-tight"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <span className="text-red-500">หยุด</span> ค้นหา,<br />
+                  <span className="text-blue-600">เริ่ม</span> จอด.<br />
+                  <span className="text-orange-500">รับประกัน</span>ที่จอด<br />
+                  <span className="gradient-text">ทันทีกับ SciPark</span>
+                </motion.h1>
+                
+                <motion.p 
+                  className="text-xl text-gray-600 leading-relaxed"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  ระบบจองที่จอดรถอัจฉริยะ ง่าย รวดเร็ว ปลอดภัย<br />
+                  <span className="font-semibold text-primary-600">
+                    Real-time availability • Instant booking • Secure payment
+                  </span>
+                </motion.p>
+              </div>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="flex flex-wrap gap-4"
+              >
+                <Link to="/register">
+                  <Button variant="primary" size="lg" icon={ArrowRight}>
+                    เริ่มต้นใช้งานฟรี
+                  </Button>
+                </Link>
+                <a href="#features">
+                  <Button variant="secondary" size="lg">
+                    เรียนรู้เพิ่มเติม
+                  </Button>
+                </a>
+              </motion.div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="relative"
+            >
+              <div className="relative">
+                <motion.div
+                  animate={{ 
+                    scale: [1, 1.1, 1],
+                    rotate: [0, 5, 0]
+                  }}
+                  transition={{ 
+                    duration: 5, 
+                    repeat: Infinity,
+                    ease: 'easeInOut'
+                  }}
+                  className="absolute inset-0 bg-gradient-to-r from-primary-400 to-secondary-500 rounded-full opacity-20 blur-3xl"
+                />
+                <div className="relative bg-gradient-to-br from-orange-100 to-orange-200 rounded-3xl p-12 shadow-2xl">
+                  <div className="text-9xl text-center mb-8">🏢</div>
+                  <div className="flex justify-center gap-8 text-7xl">
+                    <motion.div animate={{ y: [0, -10, 0] }} transition={{ duration: 2, repeat: Infinity }}>
+                      🚗
+                    </motion.div>
+                    <motion.div animate={{ y: [0, -10, 0] }} transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}>
+                      🚙
+                    </motion.div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Features Section */}
+      <section id="features" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-5xl font-bold mb-4">ทำไมต้อง SciPark?</h2>
+            <p className="text-xl text-gray-600">ฟีเจอร์ที่ทำให้การจอดรถง่ายขึ้น</p>
+          </motion.div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {features.map((feature, index) => {
+              const Icon = feature.icon
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.2 }}
+                  whileHover={{ y: -10 }}
+                  className="card p-8"
+                >
+                  <div className={`w-16 h-16 bg-gradient-to-r ${feature.gradient} rounded-2xl flex items-center justify-center mb-6 shadow-lg`}>
+                    <Icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
+                  <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                </motion.div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+      
+      {/* Testimonials Section */}
+      <section className="py-20 bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-5xl font-bold mb-4">ผู้ใช้งานพูดถึงเรา</h2>
+            <p className="text-xl text-gray-600">ความคิดเห็นจากผู้ใช้งานจริง</p>
+          </motion.div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.2 }}
+                whileHover={{ scale: 1.05 }}
+                className="card p-8"
+              >
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="text-5xl">{testimonial.avatar}</div>
+                  <div>
+                    <h4 className="font-bold text-lg">{testimonial.name}</h4>
+                    <p className="text-sm text-gray-600">{testimonial.role}</p>
+                  </div>
+                </div>
+                <div className="flex mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+                <p className="text-gray-700 italic">"{testimonial.content}"</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+      
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600">
+        <div className="max-w-4xl mx-auto px-6 text-center text-white">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="space-y-6"
+          >
+            <h2 className="text-6xl font-bold">พร้อมที่จะเริ่มต้นแล้วหรือยัง?</h2>
+            <p className="text-3xl font-semibold">เริ่มต้นใช้งานฟรีวันนี้</p>
+            <Link to="/register">
+              <Button 
+                variant="secondary" 
+                size="lg"
+                className="bg-white text-orange-600 hover:bg-gray-50 hover:scale-110"
+              >
+                ลงทะเบียนเลย
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+    </div>
+  )
+}
+
+export default Landing
