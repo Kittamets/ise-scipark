@@ -386,7 +386,7 @@ SciPark v2.0 is a simplified parking management system with the following key fe
 
 For test results questions:
 - Development Team
-- Email: dev@scipark.com
+- Email: 66050146@kmitl.ac.th
 - GitHub: github.com/Kittamets/ise-scipark
 
 ---
