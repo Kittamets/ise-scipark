@@ -12,15 +12,9 @@ const api = axios.create({
   withCredentials: true, // Important: Send cookies for JWT authentication
 })
 
-// Request interceptor to add auth token
+// Request interceptor (cookies are sent automatically via withCredentials)
 api.interceptors.request.use(
-  (config) => {
-    const token = useAuthStore.getState().token
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
+  (config) => config,
   (error) => Promise.reject(error)
 )
 
@@ -28,7 +22,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && !error.config?.url?.includes('/auth/login')) {
       useAuthStore.getState().logout()
       window.location.href = '/login'
     }

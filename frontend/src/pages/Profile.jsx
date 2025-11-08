@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { User, Mail, Phone, Car, Calendar, Lock, LogOut, Edit2, Trash2, Plus } from 'lucide-react'
+import { User, Mail, Phone, Car, Calendar, Lock, LogOut, Edit2, Trash2, Plus, CreditCard } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
 import Button from '../components/ui/Button'
@@ -435,6 +435,16 @@ const Profile = () => {
               <Card>
                 <div className="p-6 space-y-3">
                   <h3 className="font-bold text-lg mb-4">การตั้งค่า</h3>
+                  
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    icon={CreditCard}
+                    className="w-full justify-start"
+                    onClick={() => navigate('/app/payment-methods')}
+                  >
+                    ช่องทางการชำระเงิน
+                  </Button>
                   
                   <Button
                     variant="secondary"

@@ -34,12 +34,13 @@ const Login = () => {
         password: formData.password
       })
       
-      const { token, user } = response.data
+      const { user } = response.data
       
-      // Save to store
-      login(user, token)
+      // Save user to store (token is in cookie)
+      login(user)
       
       toast.success('เข้าสู่ระบบสำเร็จ! 🎉')
+      
       navigate('/app')
       
     } catch (error) {
@@ -159,6 +160,16 @@ const Login = () => {
               ลงทะเบียนเลย
             </Link>
           </p>
+
+          <div className="mt-4 pt-4 border-t border-gray-200 text-center text-sm text-gray-500">
+            <Link to="/terms" className="hover:text-primary-600 hover:underline transition-colors">
+              เงื่อนไขการใช้งาน
+            </Link>
+            {' • '}
+            <Link to="/privacy" className="hover:text-primary-600 hover:underline transition-colors">
+              นโยบายความเป็นส่วนตัว
+            </Link>
+          </div>
         </motion.div>
 
         {/* Demo Credentials */}

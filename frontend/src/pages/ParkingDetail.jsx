@@ -24,54 +24,71 @@ const ParkingDetail = () => {
     fetchParkingSpot()
   }, [id])
 
-  const fetchParkingSpot = () => {
-    // Mock data - replace with actual API call
-    const mockSpots = {
-      '1': { 
-        id: 1, 
-        name: 'หน้าตึกวิทย์ 1', 
-        zone: 'A',
-        available: 12, 
-        total: 25, 
-        pricePerHour: 20, 
-        image: '🏛️',
-        description: 'ที่จอดรถหน้าตึกวิทยาศาสตร์ 1 สะดวกสบาย ใกล้ห้องเรียน',
-        floors: [
-          { name: 'ชั้น 1 - ภาควิชาเคมี', available: 3 },
-          { name: 'ชั้น 2 - ภาควิชาชีวเคมี', available: 2 },
-          { name: 'ชั้น 3 - ภาควิชานิเทศศาสตร์', available: 4 },
-          { name: 'ชั้น 4 - ภาควิชาชีววิทยา', available: 2 },
-          { name: 'ชั้น 5 - ภาควิชาเคมี', available: 1 }
-        ],
-        facilities: ['ลิฟต์', 'ห้องน้ำ', 'รปภ. 24 ชม.', 'กล้อง CCTV'],
-        rules: [
-          'ต้องเข้าจอดภายใน 30 นาทีหลังจองจอง',
-          'ห้ามจอดเกิน 24 ชั่วโมง',
-          'กรุณาปิดไฟรถทุกครั้ง',
-          'รักษาความสะอาดและความเรียบร้อย'
-        ]
-      },
-      '2': {
-        id: 2,
-        name: 'ลานจอด A',
-        zone: 'A',
-        available: 18,
-        total: 30,
-        pricePerHour: 20,
-        image: '🅰️',
-        description: 'ลานจอดกลางแจ้ง โล่งสบาย',
-        facilities: ['รปภ. 24 ชม.', 'กล้อง CCTV', 'ไฟส่องสว่าง'],
-        rules: [
-          'ต้องเข้าจอดภายใน 30 นาทีหลังจองจอง',
-          'ห้ามจอดเกิน 24 ชั่วโมง'
-        ]
+  const fetchParkingSpot = async () => {
+    try {
+      // Fetch zone data with spots from API
+      const { parkingAPI } = await import('../utils/apiService')
+      const response = await parkingAPI.getZoneById(id)
+      
+      const zone = response.data.zone
+      const spots = response.data.spots || []
+      
+      if (zone) {
+        
+        // Group spots by floor
+        const floorGroups = {}
+        spots.forEach(spot => {
+          if (!floorGroups[spot.floor]) {
+            floorGroups[spot.floor] = []
+          }
+          floorGroups[spot.floor].push(spot)
+        })
+        
+        // Create floors array with availability
+        const floors = Object.keys(floorGroups).map(floorName => ({
+          name: floorName,
+          available: floorGroups[floorName].filter(s => s.status === 'available').length
+        }))
+        
+        // Set parking spot data
+        const zoneIcons = {
+          'CHULA': '🏛️',
+          'PRAJOM': '🏢',
+          'BEHIND': '🌳',
+          'DEAN': '👔',
+          'FRONT': '🚪'
+        }
+        
+        setParkingSpot({
+          id: zone.id || zone._id,
+          name: zone.name,
+          zone: zone.zoneName,
+          available: zone.availableSpots || 0,
+          total: zone.totalSpots || 0,
+          pricePerHour: zone.hourlyRate || 20,
+          image: zoneIcons[zone.zoneName] || '�️',
+          description: zone.description || 'ที่จอดรถสะดวกสบาย',
+          building: zone.building,
+          floors: floors,
+          facilities: ['รปภ. 24 ชม.', 'กล้อง CCTV', 'ไฟส่องสว่าง'],
+          rules: [
+            'ชั่วโมงแรกฟรี',
+            'ชั่วโมงถัดไปคิดค่าใช้จ่าย ' + (zone.hourlyRate || 20) + ' บาท/ชม.',
+            'กรุณาจอดรถในช่องที่กำหนด'
+          ]
+        })
+        
+        if (floors.length > 0) {
+          setSelectedFloor(floors[0])
+        }
+      } else {
+        // Zone not found, use fallback
+        toast.error('ไม่พบข้อมูลโซนจอดรถ')
+        navigate('/app')
       }
-      // Add more spots as needed
-    }
-
-    setParkingSpot(mockSpots[id] || mockSpots['1'])
-    if (mockSpots[id]?.floors) {
-      setSelectedFloor(mockSpots[id].floors[0])
+    } catch (error) {
+      console.error('Error fetching parking spot:', error)
+      toast.error('เกิดข้อผิดพลาดในการโหลดข้อมูล')
     }
   }
 

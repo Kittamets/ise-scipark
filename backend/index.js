@@ -9,6 +9,8 @@ import mongoSanitize from "express-mongo-sanitize"
 import xss from "xss-clean"
 
 import connectDB from "./config/db.js"
+import { initializeRedis, closeRedis } from "./config/redis.js"
+import { startAutoCancelScheduler } from "./services/autoCancelService.js"
 
 import authRouter from "./routes/authRoute.js"
 import vehicleRouter from "./routes/vehicleRoutes.js"
@@ -16,11 +18,23 @@ import bookingRouter from "./routes/bookingRoutes.js"
 import parkingRouter from "./routes/parkingRoute.js"
 import privilegesRouter from "./routes/privilegesRoute.js"
 import userRouter from "./routes/userRoutes.js"
+import paymentMethodRouter from "./routes/paymentMethodRoutes.js"
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Connect to Database
 connectDB();
+
+// Initialize Redis (optional - app continues if Redis fails)
+initializeRedis().catch(err => {
+  console.log('⚠️  Redis initialization failed, continuing without cache:', err.message);
+});
+
+// Start Auto-Cancel Scheduler (after DB connection)
+setTimeout(() => {
+  startAutoCancelScheduler();
+}, 2000); // Wait 2 seconds for DB connection
 
 // Security middleware
 // app.use(helmet()); // Set security HTTP headers
@@ -35,10 +49,15 @@ app.use(cookieParser());
 
 // Implement CORS with more specific configuration
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173', // Vite default port
+    origin: [
+        'http://localhost:5173',
+        'http://localhost:5174',
+        process.env.CLIENT_URL
+    ].filter(Boolean), // Allow multiple frontend ports
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    exposedHeaders: ['Set-Cookie']
 }));
 
 // Rate limiting
@@ -58,6 +77,34 @@ app.get('/', (req, res) => {
         res.send("APIs is currently running...");
 });
 
+// Health Check endpoint
+app.get('/health', async (req, res) => {
+  try {
+    // Check database connection
+    const mongoose = await import('mongoose');
+    const dbStatus = mongoose.default.connection.readyState === 1 ? 'connected' : 'disconnected';
+    
+    res.status(200).json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      database: dbStatus,
+      memory: {
+        used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + ' MB',
+        total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024) + ' MB'
+      },
+      services: {
+        autoCancelScheduler: 'running'
+      }
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: 'error',
+      message: error.message
+    });
+  }
+});
+
 // Auth routes
 app.use('/api/auth', authRouter);
 // Vehicle routes
@@ -70,6 +117,21 @@ app.use('/api/parking', parkingRouter);
 app.use('/api/privileges', privilegesRouter);
 // User routes
 app.use('/api/user', userRouter);
+// Payment Method routes
+app.use('/api/payment-methods', paymentMethodRouter);
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  console.log('🛑 SIGTERM signal received: closing HTTP server');
+  await closeRedis();
+  process.exit(0);
+});
+
+process.on('SIGINT', async () => {
+  console.log('🛑 SIGINT signal received: closing HTTP server');
+  await closeRedis();
+  process.exit(0);
+});
 
 // Global error handler
 app.use((err, req, res, next) => {

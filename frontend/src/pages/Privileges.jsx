@@ -151,7 +151,7 @@ const Privileges = () => {
 
   return (
     <div className="min-h-screen pb-20 lg:pb-8">
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -186,7 +186,7 @@ const Privileges = () => {
         </motion.div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-12">
           {tiers.map((tier, index) => {
             const Icon = tier.icon
             return (
@@ -198,56 +198,102 @@ const Privileges = () => {
               >
                 <Card 
                   hover={!tier.current}
-                  className={`relative ${tier.current ? 'ring-4 ring-primary-500 shadow-2xl' : ''} ${tier.popular ? 'scale-105 shadow-2xl' : ''}`}
+                  className={`relative overflow-hidden ${tier.current ? 'ring-4 ring-primary-500 shadow-2xl' : ''} ${tier.popular ? 'shadow-2xl' : ''}`}
                 >
-                  {/* Popular Badge */}
-                  {tier.popular && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-2 rounded-full font-bold text-sm shadow-lg">
-                      🔥 แนะนำ
-                    </div>
-                  )}
+                  <div className="p-6 lg:p-8">
+                    {/* Badges at Top */}
+                    <div className="flex items-center justify-between gap-2 mb-4 min-h-[32px]">
+                      {/* Popular Badge */}
+                      {tier.popular && (
+                        <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-1.5 rounded-full font-bold text-xs shadow-lg">
+                          🔥 แนะนำ
+                        </div>
+                      )}
 
-                  {/* Current Badge */}
-                  {tier.current && (
-                    <div className="absolute -top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg flex items-center gap-2">
-                      <Check className="w-4 h-4" />
-                      กำลังใช้งาน
+                      {/* Current Badge */}
+                      {tier.current && (
+                        <div className="ml-auto bg-green-500 text-white px-3 py-1.5 rounded-full font-bold text-xs shadow-lg flex items-center gap-1.5">
+                          <Check className="w-3 h-3" />
+                          กำลังใช้งาน
+                        </div>
+                      )}
                     </div>
-                  )}
-
-                  <div className="p-8">
                     {/* Icon & Name */}
                     <div className="text-center mb-6">
-                      <div className={`inline-block bg-gradient-to-br ${tier.gradient} p-4 rounded-3xl mb-4 shadow-lg`}>
-                        <Icon className="w-12 h-12 text-white" />
-                      </div>
-                      <h3 className="text-3xl font-bold mb-2">{tier.name}</h3>
-                      <div className="text-4xl font-bold mb-1">
+                      <motion.div
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ 
+                          type: "spring",
+                          delay: index * 0.1 + 0.2,
+                          stiffness: 200 
+                        }}
+                        className={`inline-flex items-center justify-center w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br ${tier.gradient} rounded-3xl mb-4 shadow-xl ring-4 ring-white`}
+                      >
+                        <Icon className="w-10 h-10 lg:w-12 lg:h-12 text-white drop-shadow-lg" />
+                      </motion.div>
+                      
+                      <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">
+                        {tier.name}
+                      </h3>
+                      
+                      <div className="mb-2">
                         {tier.id === 'iron' ? (
-                          <span className="text-gray-600">ฟรี</span>
-                        ) : (
-                          <span className={`bg-gradient-to-r ${tier.gradient} bg-clip-text text-transparent`}>
-                            {tier.price} ฿
+                          <span className="text-4xl lg:text-5xl font-bold text-gray-600">
+                            ฟรี
                           </span>
+                        ) : (
+                          <div className="flex items-baseline justify-center gap-1">
+                            <span className={`text-5xl lg:text-6xl font-bold bg-gradient-to-r ${tier.gradient} bg-clip-text text-transparent`}>
+                              {tier.price}
+                            </span>
+                            <span className="text-2xl font-semibold text-gray-500">฿</span>
+                          </div>
                         )}
                       </div>
-                      <p className="text-gray-500 text-sm">{tier.priceText}</p>
+                      
+                      <p className="text-sm lg:text-base text-gray-500 font-medium">
+                        {tier.priceText}
+                      </p>
                     </div>
 
                     {/* Discount Badge */}
                     {tier.discount > 0 && (
-                      <div className={`text-center mb-6 bg-gradient-to-r ${tier.gradient} text-white py-3 rounded-2xl font-bold text-lg`}>
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: index * 0.1 + 0.4 }}
+                        className={`text-center mb-6 bg-gradient-to-r ${tier.gradient} text-white py-4 px-4 rounded-2xl font-bold text-base lg:text-lg shadow-lg`}
+                      >
                         ส่วนลด {tier.discount}% ทุกการจอด!
-                      </div>
+                      </motion.div>
                     )}
 
                     {/* Features */}
                     <div className="space-y-3 mb-8">
                       {tier.features.map((feature, i) => (
-                        <div key={i} className="flex items-start gap-3">
-                          <Check className={`w-5 h-5 flex-shrink-0 mt-0.5 ${tier.current ? 'text-primary-600' : 'text-gray-400'}`} />
-                          <span className="text-gray-700">{feature}</span>
-                        </div>
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 + 0.5 + i * 0.05 }}
+                          className="flex items-start gap-3 group"
+                        >
+                          <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${
+                            tier.current 
+                              ? 'bg-green-100' 
+                              : 'bg-gray-100'
+                          }`}>
+                            <Check className={`w-4 h-4 ${
+                              tier.current 
+                                ? 'text-green-600' 
+                                : 'text-gray-400'
+                            }`} />
+                          </div>
+                          <span className="text-sm lg:text-base text-gray-700 leading-relaxed">
+                            {feature}
+                          </span>
+                        </motion.div>
                       ))}
                     </div>
 
@@ -256,7 +302,7 @@ const Privileges = () => {
                       <Button
                         variant="secondary"
                         size="lg"
-                        className="w-full"
+                        className="w-full font-bold"
                         disabled
                       >
                         กำลังใช้งาน
@@ -265,20 +311,25 @@ const Privileges = () => {
                       <Button
                         variant="secondary"
                         size="lg"
-                        className="w-full"
+                        className="w-full font-bold"
                         disabled
                       >
                         แผนพื้นฐาน
                       </Button>
                     ) : (
-                      <Button
-                        variant="primary"
-                        size="lg"
-                        className={`w-full bg-gradient-to-r ${tier.gradient}`}
-                        onClick={() => handleUpgrade(tier)}
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                       >
-                        อัพเกรดเลย
-                      </Button>
+                        <Button
+                          variant="primary"
+                          size="lg"
+                          className={`w-full bg-gradient-to-r ${tier.gradient} hover:shadow-xl transition-all duration-300 font-bold text-base lg:text-lg py-4`}
+                          onClick={() => handleUpgrade(tier)}
+                        >
+                          อัพเกรดเลย
+                        </Button>
+                      </motion.div>
                     )}
                   </div>
                 </Card>
@@ -287,31 +338,74 @@ const Privileges = () => {
           })}
         </div>
 
-        {/* Redeem Code Section */}
+        {/* Enhanced Redeem Code Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
+          className="mt-16"
         >
-          <Card className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200">
-            <div className="p-8 text-center">
-              <Gift className="w-16 h-16 text-orange-500 mx-auto mb-4" />
-              <h3 className="text-3xl font-bold mb-2">มีโค้ดพิเศษ?</h3>
-              <p className="text-gray-600 mb-6 max-w-md mx-auto">
+          <Card className="relative overflow-hidden bg-gradient-to-br from-yellow-50 via-orange-50 to-amber-50 border-2 border-yellow-300 shadow-xl">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 bg-grid-yellow-200/[0.2] bg-[size:20px_20px]" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-yellow-200 to-orange-200 rounded-full blur-3xl opacity-30" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-br from-orange-200 to-amber-200 rounded-full blur-3xl opacity-30" />
+
+            <div className="relative p-6 sm:p-8 lg:p-12 text-center">
+              {/* Icon with Animation */}
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ 
+                  type: "spring",
+                  stiffness: 200,
+                  delay: 0.5
+                }}
+                className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-orange-400 to-orange-600 rounded-3xl shadow-xl mb-6 ring-4 ring-orange-200"
+              >
+                <Gift className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-white drop-shadow-lg" />
+              </motion.div>
+
+              {/* Title */}
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 px-4">
+                มีโค้ดพิเศษ?
+              </h3>
+
+              {/* Description */}
+              <p className="text-base lg:text-lg text-gray-700 mb-8 max-w-2xl mx-auto leading-relaxed px-4">
                 แลกโค้ดเพื่อรับสิทธิพิเศษ หรือส่วนลดฟรี!
               </p>
-              <Button
-                variant="primary"
-                size="lg"
-                icon={Gift}
-                onClick={() => setShowRedeemModal(true)}
-                className="bg-gradient-to-r from-yellow-500 to-orange-500"
+
+              {/* CTA Button */}
+              <div className="flex justify-center">
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => setShowRedeemModal(true)}
+                  className="bg-gradient-to-r from-yellow-500 via-orange-500 to-orange-600 hover:from-yellow-600 hover:via-orange-600 hover:to-orange-700 text-white font-bold text-base lg:text-lg px-8 lg:px-10 py-4 lg:py-5 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 inline-flex items-center justify-center gap-3 w-auto max-w-md"
+                >
+                  <Gift className="w-5 h-5" />
+                  <span>แลกโค้ดตอนนี้</span>
+                </motion.button>
+              </div>
+
+              {/* Example Code */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+                className="mt-8 inline-block bg-white/60 backdrop-blur-sm border-2 border-yellow-300 rounded-xl px-4 sm:px-6 py-3 max-w-full mx-4"
               >
-                แลกโค้ดตอนนี้
-              </Button>
-              <p className="text-xs text-gray-500 mt-4">
-                ตัวอย่างโค้ด: SCIPARK2024 (Diamond 1 เดือน)
-              </p>
+                <p className="text-xs sm:text-sm text-gray-600 mb-2">ตัวอย่างโค้ด:</p>
+                <div className="flex flex-col sm:flex-row items-center gap-2 justify-center">
+                  <code className="text-base sm:text-lg font-bold text-orange-600 tracking-wider break-all">
+                    SCIPARK2024
+                  </code>
+                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-semibold whitespace-nowrap">
+                    Diamond 1 เดือน
+                  </span>
+                </div>
+              </motion.div>
             </div>
           </Card>
         </motion.div>

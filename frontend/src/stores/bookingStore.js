@@ -6,6 +6,8 @@ export const useBookingStore = create((set) => ({
   
   setActiveBooking: (booking) => set({ activeBooking: booking }),
   
+  updateBooking: (booking) => set({ activeBooking: booking }),
+  
   clearActiveBooking: () => set({ activeBooking: null }),
   
   addToHistory: (booking) => set((state) => ({

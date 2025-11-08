@@ -4,6 +4,7 @@ import ParkingSpot from "../models/parkingSpotModel.js";
 import ParkingZone from "../models/parkingZoneModel.js";
 import Vehicle from "../models/vehicleModel.js";
 import User from "../models/userModel.js";
+import { generateBookingQRCode } from "../services/qrCodeService.js";
 
 /*
     @desc   Create a new booking
@@ -68,7 +69,9 @@ export const createBooking = async (req, res) => {
     spot.status = "occupied";
     await spot.save({ session });
 
-    // Create new booking
+    // Create new booking with booking fee (ตาม Requirements: 20 บาท/ครั้ง)
+    const bookingFee = 20; // ค่าธรรมเนียมการจอง 20 บาท/ครั้ง
+    
     const newBooking = new Booking({
       user: userId,
       vehicle: vehicleId || null,
@@ -78,13 +81,27 @@ export const createBooking = async (req, res) => {
       floor: spot.floor,
       startTime: new Date(),
       status: "active",
-      cost: 0, // Will be calculated when booking ends
+      bookingFee: bookingFee, // ค่าจอง 20 บาท
+      cost: 0, // ค่าจอดเกิน (จะคำนวณเมื่อจบการจอด)
     });
 
     await newBooking.save({ session });
 
     // Commit transaction
     await session.commitTransaction();
+
+    // Generate QR code for the booking
+    let qrCodeData = null;
+    try {
+      const qrCode = await generateBookingQRCode(newBooking);
+      qrCodeData = {
+        qrCodeURL: qrCode.qrCodeDataURL,
+        expiresAt: qrCode.expiresAt
+      };
+    } catch (qrError) {
+      console.error('QR Code generation failed:', qrError);
+      // Continue without QR code - non-critical feature
+    }
 
     // Prepare response
     const responseData = {
@@ -110,7 +127,13 @@ export const createBooking = async (req, res) => {
         : null,
       startTime: newBooking.startTime,
       status: newBooking.status,
-      pricePerHour: spot.pricePerHour,
+      pricing: {
+        bookingFee: bookingFee, // ค่าธรรมเนียมการจอง 20 บาท/ครั้ง
+        freeHours: 3, // 3 ชั่วโมงแรกฟรี
+        overtimeRate: 10, // 10 บาท/ชั่วโมง (หลัง 3 ชม.แรก)
+      },
+      qrCode: qrCodeData, // QR code for check-in
+      warning: "⚠️ ต้อง Check-in ภายใน 15 นาที ไม่งั้นระบบจะยกเลิกการจองอัตโนมัติ",
     };
 
     res.status(201).json({
@@ -211,6 +234,7 @@ export const getActiveBooking = async (req, res) => {
         estimatedCost,
       },
       status: booking.status,
+      qrCode: booking.qrCode || null,
     };
 
     res.status(200).json({
@@ -264,27 +288,39 @@ export const completeBooking = async (req, res) => {
 
     let pricePerHour = booking.spot?.pricePerHour || 20;
 
-    // Apply rank discount
+    // Apply membership tier discount (ตาม Requirements)
     let discount = 0;
     let pointsEarned = 0;
 
-    if (user.rank === "Diamond") {
-      discount = 0.1; // 10%
+    if (user.memberTier === "diamond" || user.rank === "Diamond") {
+      discount = 0.1; // 10% ส่วนลด
       pointsEarned = Math.floor(durationHours * 5); // 5 points per hour
-    } else if (user.rank === "Predator") {
-      discount = 0.2; // 20%
+    } else if (user.memberTier === "predator" || user.rank === "Predator") {
+      discount = 0.15; // 15% ส่วนลด (ตาม Requirements)
       pointsEarned = Math.floor(durationHours * 10); // 10 points per hour
     } else {
+      // Iron tier - ไม่มีส่วนลด
+      discount = 0;
       pointsEarned = Math.floor(durationHours * 2); // 2 points per hour for Iron
     }
 
-    // First hour free
-    const chargeableHours = Math.max(0, durationHours - 1);
-    const cost = Math.ceil(chargeableHours * pricePerHour * (1 - discount));
+    // First 3 hours free (ตาม Requirements)
+    const freeHours = 3;
+    const chargeableHours = Math.max(0, durationHours - freeHours);
+    
+    // คำนวณค่าจอดเกิน (10 บาท/ชม. หลัง 3 ชม.แรก)
+    const overtimeCost = Math.ceil(chargeableHours * 10 * (1 - discount));
+    
+    // ค่าธรรมเนียมการจอง (20 บาท/ครั้ง)
+    const bookingFee = booking.bookingFee || 20;
+    
+    // รวมค่าใช้จ่ายทั้งหมด
+    const totalCost = bookingFee + overtimeCost;
 
     // Update booking
     booking.endTime = endTime;
-    booking.cost = cost;
+    booking.cost = overtimeCost; // ค่าจอดเกิน
+    booking.totalCost = totalCost; // ค่าใช้จ่ายรวม
     booking.status = "completed";
     await booking.save({ session });
 
@@ -309,10 +345,17 @@ export const completeBooking = async (req, res) => {
           hours: Math.floor(durationHours),
           minutes: Math.floor((durationHours % 1) * 60),
         },
-        cost,
+        pricing: {
+          bookingFee: bookingFee, // 20 บาท
+          overtimeCost: overtimeCost, // ค่าจอดเกิน (10฿/ชม.)
+          totalCost: totalCost, // รวมทั้งหมด
+          freeHours: freeHours, // 3 ชั่วโมงฟรี
+          chargeableHours: chargeableHours, // ชั่วโมงที่คิดเงิน
+        },
         pointsEarned,
         totalPoints: user.points,
-        discount: Math.round(discount * 100),
+        discount: Math.round(discount * 100) + '%',
+        memberTier: user.memberTier || user.rank,
       },
     });
   } catch (error) {
@@ -354,6 +397,7 @@ export const cancelBooking = async (req, res) => {
 
     // Update booking status
     booking.status = "cancelled";
+    booking.cancelReason = "user_cancelled";
     booking.endTime = new Date();
     await booking.save({ session });
 
@@ -506,5 +550,195 @@ export const updateBookingStatus = async (req, res) => {
       message: "เกิดข้อผิดพลาด",
       error: error.message,
     });
+  }
+};
+
+/*
+    @desc   Check-in to booking (confirm arrival)
+    @route  PUT /api/bookings/:bookingId/checkin
+    @access Private
+*/
+export const checkIn = async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+    const userId = req.userId;
+
+    const booking = await Booking.findById(bookingId)
+      .populate('spot', 'spotNumber name floor building')
+      .populate('zone', 'zoneName');
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: "ไม่พบการจอง"
+      });
+    }
+
+    // Verify ownership
+    if (booking.user.toString() !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "คุณไม่มีสิทธิ์เข้าถึงการจองนี้"
+      });
+    }
+
+    // Check status
+    if (booking.status !== 'active') {
+      return res.status(400).json({
+        success: false,
+        message: "การจองนี้ไม่อยู่ในสถานะ active"
+      });
+    }
+
+    // Check if already checked in
+    if (booking.actualStartTime) {
+      return res.status(400).json({
+        success: false,
+        message: "คุณได้ทำการ check-in แล้ว",
+        checkedInAt: booking.actualStartTime
+      });
+    }
+
+    // Update actual start time
+    booking.actualStartTime = new Date();
+    await booking.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Check-in สำเร็จ! ยินดีต้อนรับ",
+      data: {
+        bookingId: booking._id,
+        checkedInAt: booking.actualStartTime,
+        spot: booking.spot,
+        zone: booking.zone,
+        duration: {
+          booked: booking.startTime,
+          checkedIn: booking.actualStartTime
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error("Check-in error:", error);
+    res.status(500).json({
+      success: false,
+      message: "เกิดข้อผิดพลาดในการ check-in",
+      error: error.message
+    });
+  }
+};
+
+/*
+    @desc   Check-out from booking
+    @route  PUT /api/bookings/:bookingId/checkout
+    @access Private
+*/
+export const checkOut = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { bookingId } = req.params;
+    const userId = req.userId;
+
+    const booking = await Booking.findById(bookingId)
+      .populate('spot')
+      .populate('user', 'rank')
+      .session(session);
+
+    if (!booking) {
+      throw new Error("ไม่พบการจอง");
+    }
+
+    // Verify ownership
+    if (booking.user._id.toString() !== userId) {
+      throw new Error("คุณไม่มีสิทธิ์เข้าถึงการจองนี้");
+    }
+
+    // Check status
+    if (booking.status !== 'active') {
+      throw new Error("การจองนี้ไม่อยู่ในสถานะ active");
+    }
+
+    // Check if checked in
+    if (!booking.actualStartTime) {
+      throw new Error("กรุณา check-in ก่อน check-out");
+    }
+
+    // Calculate duration and costs
+    const now = new Date();
+    booking.actualEndTime = now;
+    booking.endTime = now;
+
+    const durationMs = now - booking.actualStartTime;
+    const durationHours = durationMs / (1000 * 60 * 60);
+
+    // Pricing calculation
+    const freeHours = 3;
+    const overtimeRate = 10; // บาท/ชั่วโมง
+    const overtimeHours = Math.max(0, durationHours - freeHours);
+    const overtimeCost = Math.ceil(overtimeHours) * overtimeRate;
+
+    // Apply membership discounts
+    let discount = 0;
+    if (booking.user.rank === 'Diamond') {
+      discount = 0.10; // 10% off
+    } else if (booking.user.rank === 'Predator') {
+      discount = 0.20; // 20% off
+    }
+
+    const discountAmount = overtimeCost * discount;
+    const finalOvertimeCost = overtimeCost - discountAmount;
+
+    booking.cost = finalOvertimeCost;
+    booking.totalCost = booking.bookingFee + finalOvertimeCost;
+    booking.status = 'completed';
+
+    await booking.save({ session });
+
+    // Free up the spot
+    await ParkingSpot.findByIdAndUpdate(
+      booking.spot._id,
+      { status: 'available' },
+      { session }
+    );
+
+    await session.commitTransaction();
+
+    res.status(200).json({
+      success: true,
+      message: "Check-out สำเร็จ! ขอบคุณที่ใช้บริการ",
+      data: {
+        bookingId: booking._id,
+        duration: {
+          hours: Math.floor(durationHours),
+          minutes: Math.floor((durationHours % 1) * 60)
+        },
+        pricing: {
+          bookingFee: booking.bookingFee,
+          durationHours: durationHours.toFixed(2),
+          freeHours: freeHours,
+          overtimeHours: overtimeHours.toFixed(2),
+          overtimeCost: overtimeCost,
+          membershipDiscount: discount * 100 + '%',
+          discountAmount: discountAmount.toFixed(2),
+          finalCost: booking.cost.toFixed(2),
+          totalCost: booking.totalCost
+        },
+        checkedIn: booking.actualStartTime,
+        checkedOut: booking.actualEndTime
+      }
+    });
+
+  } catch (error) {
+    await session.abortTransaction();
+    console.error("Check-out error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "เกิดข้อผิดพลาดในการ check-out",
+      error: error.message
+    });
+  } finally {
+    session.endSession();
   }
 };

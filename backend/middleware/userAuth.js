@@ -2,10 +2,19 @@ import jwt from "jsonwebtoken";
 
 // Middleware to authenticate user using JWT
 const userAuth = (req, res, next) => {
-  const { token } = req.cookies; // Get token from cookies
+  // Try to get token from cookies first
+  let token = req.cookies?.token;
+  
+  // If not in cookies, try Authorization header
+  if (!token) {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    }
+  }
 
   if (!token) {
-    return res.status(401).json({ success: false, message: "Unauthorized" });
+    return res.status(401).json({ success: false, message: "Unauthorized - No token provided" });
   }
 
   try {
@@ -17,7 +26,8 @@ const userAuth = (req, res, next) => {
     next();
 
   } catch (error) {
-    return res.status(401).json({ success: false, message: "Unauthorized" });
+    console.error('JWT verification error:', error.message);
+    return res.status(401).json({ success: false, message: "Unauthorized - Invalid token" });
   }
 };
 

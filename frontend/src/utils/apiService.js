@@ -13,6 +13,7 @@ export const authAPI = {
 export const parkingAPI = {
   getAllSpots: () => api.get('/parking/spots'),
   getSpotById: (id) => api.get(`/parking/spots/${id}`),
+  getZoneById: (id) => api.get(`/parking/zones/${id}`),
   getSpotsByZone: (zoneId) => api.get(`/parking/zones/${zoneId}/spots`),
   getZones: () => api.get('/parking/zones'),
   checkAvailability: (spotId) => api.get(`/parking/spots/${spotId}/availability`),
@@ -26,6 +27,8 @@ export const bookingAPI = {
   cancelBooking: (bookingId) => api.put(`/bookings/${bookingId}/cancel`),
   completeBooking: (bookingId) => api.put(`/bookings/${bookingId}/complete`),
   extendBooking: (bookingId, hours) => api.put(`/bookings/${bookingId}/extend`, { hours }),
+  checkIn: (bookingId) => api.put(`/bookings/${bookingId}/checkin`),
+  checkOut: (bookingId) => api.put(`/bookings/${bookingId}/checkout`),
 }
 
 // Privileges APIs

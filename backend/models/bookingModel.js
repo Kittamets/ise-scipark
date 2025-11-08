@@ -29,22 +29,39 @@ const bookingSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  actualStartTime: {
+    type: Date,
+    default: null, // เวลา check-in จริง
+  },
   endTime: {  
     type: Date,
     default: null,
   },
+  actualEndTime: {
+    type: Date,
+    default: null, // เวลา check-out จริง
+  },
+  bookingFee: {
+    type: Number,
+    default: 20, // ค่าธรรมเนียมการจอง 20 บาท/ครั้ง
+  },
   cost: {
     type: Number,
-    default: 0,
+    default: 0, // ค่าจอดเกิน (10 บาท/ชม. หลัง 3 ชม.แรก)
   },
   totalCost: {
     type: Number,
-    default: 0,
+    default: 0, // bookingFee + cost
   },
   status: {
     type: String,
     enum: ["pending", "active", "completed", "cancelled"],
     default: "active",
+  },
+  cancelReason: {
+    type: String,
+    enum: ["user_cancelled", "auto_cancelled_timeout", "admin_cancelled"],
+    default: null,
   },
 }, { timestamps: true });
 

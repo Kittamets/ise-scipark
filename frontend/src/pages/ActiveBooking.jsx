@@ -1,21 +1,26 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { MapPin, Clock, QrCode, AlertCircle, Car } from 'lucide-react'
+import { MapPin, Clock, QrCode, AlertCircle, Car, CheckCircle, LogOut, Timer } from 'lucide-react'
+import { useAuthStore } from '../stores/authStore'
 import { useBookingStore } from '../stores/bookingStore'
+import { bookingAPI } from '../utils/apiService'
 import Button from '../components/ui/Button'
 import Card from '../components/ui/Card'
 import Modal from '../components/ui/Modal'
+import QRCodeDisplay from '../components/QRCodeDisplay'
 import toast from 'react-hot-toast'
 
 const ActiveBooking = () => {
   const navigate = useNavigate()
-  const { activeBooking, clearActiveBooking } = useBookingStore()
+  const { activeBooking, clearActiveBooking, updateBooking } = useBookingStore()
   const [timeElapsed, setTimeElapsed] = useState('00:00:00')
   const [showCancelModal, setShowCancelModal] = useState(false)
   const [showQRModal, setShowQRModal] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [showFinishModal, setShowFinishModal] = useState(false)
 
+  // Timer for elapsed time from startTime
   useEffect(() => {
     if (!activeBooking) return
 
@@ -49,6 +54,10 @@ const ActiveBooking = () => {
   }
 
   const handleFinishParking = () => {
+    setShowFinishModal(true)
+  }
+
+  const confirmFinishParking = () => {
     const cost = calculateCost()
     if (cost > 0) {
       navigate('/app/payment', { state: { booking: activeBooking, cost } })
@@ -82,25 +91,67 @@ const ActiveBooking = () => {
 
   if (!activeBooking) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="text-center space-y-6">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="text-9xl"
-          >
-            🚗
-          </motion.div>
-          <div>
-            <h2 className="text-4xl font-bold mb-4">ไม่มีการจอง</h2>
-            <p className="text-xl text-gray-600 mb-8">คุณไม่มีการจองที่จอดรถในขณะนี้</p>
-            <Link to="/app">
-              <Button variant="primary" size="lg">
-                ไปจองที่จอด
-              </Button>
-            </Link>
-          </div>
-        </div>
+      <div className="min-h-[80vh] flex items-center justify-center px-4 py-8">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-lg w-full mx-auto"
+        >
+          <Card className="text-center p-6 sm:p-8 lg:p-12 shadow-2xl border-2 border-gray-100">
+            {/* Car Icon with Animation */}
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ 
+                type: "spring",
+                stiffness: 260,
+                damping: 20,
+                delay: 0.1 
+              }}
+              className="inline-flex items-center justify-center w-32 h-32 lg:w-40 lg:h-40 bg-gradient-to-br from-red-400 via-red-500 to-pink-500 rounded-3xl mb-8 shadow-xl"
+            >
+              <Car className="w-16 h-16 lg:w-20 lg:h-20 text-white" />
+            </motion.div>
+
+            {/* Title */}
+            <motion.h2
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 px-4"
+            >
+              ไม่มีการจอง
+            </motion.h2>
+
+            {/* Description */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="text-base sm:text-lg text-gray-600 mb-8 leading-relaxed px-4"
+            >
+              คุณไม่มีการจองที่จอดรถในขณะนี้
+            </motion.p>
+
+            {/* CTA Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <Link to="/app" className="block">
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="w-full max-w-sm mx-auto block text-base lg:text-lg font-bold py-4 px-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  ไปจองที่จอด
+                </motion.button>
+              </Link>
+            </motion.div>
+          </Card>
+        </motion.div>
       </div>
     )
   }
@@ -189,7 +240,7 @@ const ActiveBooking = () => {
                 <h3 className="font-bold text-lg mb-4">รายละเอียดการจอง</h3>
                 <div className="flex justify-between">
                   <span className="text-gray-600">เลขที่การจอง</span>
-                  <span className="font-mono font-bold">#{activeBooking.id}</span>
+                  <span className="font-mono font-bold">#{activeBooking.bookingId || activeBooking.id}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">เวลาเริ่มจอด</span>
@@ -218,9 +269,11 @@ const ActiveBooking = () => {
                   variant="primary"
                   size="lg"
                   onClick={handleFinishParking}
+                  disabled={loading}
                   className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
                 >
-                  จบการจอด & ชำระเงิน
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  เสร็จสิ้นการจอด
                 </Button>
                 
                 <Button
@@ -228,6 +281,7 @@ const ActiveBooking = () => {
                   size="lg"
                   onClick={() => setShowCancelModal(true)}
                   className="w-full"
+                  disabled={loading}
                 >
                   ยกเลิกการจอง
                 </Button>
@@ -250,34 +304,83 @@ const ActiveBooking = () => {
         onClose={() => setShowQRModal(false)}
         title="QR Code สำหรับเข้าจอด"
       >
-        <div className="text-center space-y-4">
-          <div className="bg-white p-8 rounded-3xl inline-block border-4 border-primary-500">
-            <div className="w-64 h-64 bg-gray-100 rounded-2xl flex items-center justify-center">
-              {/* Mock QR Code */}
-              <div className="grid grid-cols-8 gap-1">
-                {Array.from({ length: 64 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className={`w-3 h-3 ${Math.random() > 0.5 ? 'bg-black' : 'bg-white'}`}
-                  />
-                ))}
+        {activeBooking?.qrCode?.qrCodeURL ? (
+          <QRCodeDisplay 
+            booking={activeBooking}
+            qrCodeURL={activeBooking.qrCode.qrCodeURL}
+            onClose={() => setShowQRModal(false)}
+          />
+        ) : (
+          <div className="text-center space-y-4">
+            <div className="bg-white p-8 rounded-3xl inline-block border-4 border-primary-500">
+              <div className="w-64 h-64 bg-gray-100 rounded-2xl flex items-center justify-center">
+                {/* Mock QR Code - Fallback */}
+                <div className="grid grid-cols-8 gap-1">
+                  {Array.from({ length: 64 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={`w-3 h-3 ${Math.random() > 0.5 ? 'bg-black' : 'bg-white'}`}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
+            
+            <div className="bg-gray-50 rounded-2xl p-4">
+              <p className="font-mono text-lg font-bold mb-2">#{activeBooking._id?.slice(-6) || 'N/A'}</p>
+              <p className="text-sm text-gray-600">แสกน QR Code นี้ที่จุดจอดรถ</p>
+            </div>
+
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={() => setShowQRModal(false)}
+              className="w-full"
+            >
+              ปิด
+            </Button>
           </div>
-          
-          <div className="bg-gray-50 rounded-2xl p-4">
-            <p className="font-mono text-lg font-bold mb-2">#{activeBooking.id}</p>
-            <p className="text-sm text-gray-600">แสกน QR Code นี้ที่จุดจอดรถ</p>
+        )}
+      </Modal>
+
+      {/* Finish Parking Modal */}
+      <Modal
+        isOpen={showFinishModal}
+        onClose={() => setShowFinishModal(false)}
+        title="เสร็จสิ้นการจอด"
+      >
+        <div className="space-y-4">
+          <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-6 text-center">
+            <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
+            <h4 className="text-2xl font-bold text-green-800 mb-2">
+              ค่าจอดรถทั้งหมด
+            </h4>
+            <p className="text-5xl font-bold text-green-600 mb-2">
+              {calculateCost()} ฿
+            </p>
+            <p className="text-sm text-gray-600">
+              เวลาจอด: {timeElapsed}
+            </p>
           </div>
 
-          <Button
-            variant="secondary"
-            size="lg"
-            onClick={() => setShowQRModal(false)}
-            className="w-full"
-          >
-            ปิด
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="secondary"
+              size="lg"
+              className="flex-1"
+              onClick={() => setShowFinishModal(false)}
+            >
+              ยกเลิก
+            </Button>
+            <Button
+              variant="primary"
+              size="lg"
+              className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600"
+              onClick={confirmFinishParking}
+            >
+              {calculateCost() === 0 ? 'เสร็จสิ้น' : 'ไปชำระเงิน'}
+            </Button>
+          </div>
         </div>
       </Modal>
 

@@ -33,7 +33,8 @@ const parkingZoneSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-parkingZoneSchema.index({ zoneName: 1 });
+// Index already created by unique: true on zoneName field
+// parkingZoneSchema.index({ zoneName: 1 }); // REMOVED - duplicate
 
 const ParkingZone = mongoose.models.ParkingZone || mongoose.model("ParkingZone", parkingZoneSchema);
 export default ParkingZone;

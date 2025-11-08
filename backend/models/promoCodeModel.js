@@ -54,7 +54,7 @@ const promoCodeSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Indexes
-promoCodeSchema.index({ code: 1 });
+// promoCodeSchema.index({ code: 1 }); // REMOVED - duplicate (already unique: true)
 promoCodeSchema.index({ isActive: 1, expiresAt: 1 });
 
 const PromoCode = mongoose.models.PromoCode || mongoose.model("PromoCode", promoCodeSchema);

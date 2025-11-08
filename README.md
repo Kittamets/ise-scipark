@@ -1,54 +1,346 @@
-# 🅿️ SciPark - Smart Parking Management System# 🚗 SciPark - Smart Parking System
+# 🅿️ SciPark - Smart Parking Management System
 
+> **ระบบจองที่จอดรถอัจฉริยะ** สำหรับคณะวิทยาศาสตร์ มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี  
+> จองล่วงหน้า, Real-time availability, Pay-per-Booking
 
-
-ระบบจัดการลานจอดรถอัจฉริยะสำหรับมหาวิทยาลัย พร้อมระบบสมาชิก, รีวอร์ด, และโปรโมชั่นระบบจองที่จอดรถอัจฉริยะแบบ Real-time ที่สวยงาม ทันสมัย และใช้งานง่าย
-
-
-
-## 🏗️ โครงสร้างโปรเจค![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react)
-
+![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react)
 ![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=for-the-badge&logo=vite)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?style=for-the-badge&logo=tailwind-css)
+![Express.js](https://img.shields.io/badge/Express-4-000000?style=for-the-badge&logo=express)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb)
 
-```![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?style=for-the-badge&logo=tailwind-css)
+---
 
-ise-scipark/![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb)
+## 📖 Documentation
 
-├── frontend/              # React + Vite Frontend![Netlify](https://img.shields.io/badge/Netlify-Functions-00C7B7?style=for-the-badge&logo=netlify)
+- 📄 **[Business Requirements](docs/BUSINESS-REQUIREMENTS.md)** - ความต้องการทางธุรกิจ, Pain Points, Solutions
+- 🔄 **[Process Flow Diagrams](docs/PROCESS-FLOW.md)** - Flow diagrams ทั้งหมดพร้อม Mermaid
+- 🚀 **[Executive Summary & Pitch Deck](docs/EXECUTIVE-SUMMARY.md)** - เอกสารสำหรับนำเสนอนักลงทุน
 
-│   ├── src/              # Source code
+---
 
-│   ├── public/           # Static assets## ✨ Features
+## 🎯 The Problem
 
-│   ├── index.html        # HTML entry point
+**ปัญหาการจอดรถในคณะ:**
+- ❌ ไม่รู้ว่ามีที่จอดหรือไม่
+- ❌ ต้องวนหาที่จอด 20-30 นาที
+- ❌ ไม่สามารถจองล่วงหน้าได้
+- ❌ เสียเวลา, สิ้นเปลืองน้ำมัน, เครียด
 
-│   ├── package.json      # Frontend dependencies- 🎨 **Beautiful UI** - ออกแบบด้วย Tailwind CSS + Framer Motion
+## 💡 The Solution: SciPark
 
-│   └── vite.config.js    # Vite configuration- ⚡ **Real-time** - อัพเดตที่จอดว่างแบบ Real-time
+**ระบบจองที่จอดรถอัจฉริยะ** ที่ให้คุณ:
+- ✅ **รู้ที่ว่างแบบ Real-time** - ไม่ต้องเดา
+- ✅ **จองล่วงหน้าผ่านแอป** - มั่นใจว่ามีที่จอดรอรับ
+- ✅ **ระบบหาที่ให้อัตโนมัติ** - ไม่ต้องลังเล
+- ✅ **QR Code เข้าจอด** - สะดวกรวดเร็ว
+- ✅ **ประหยัดเวลา 70%** - จาก 30 นาที → 9 นาที
 
-│- 🔐 **Secure** - JWT Authentication + MongoDB Atlas
+---
 
-├── backend/              # Express + MongoDB Backend- 💳 **Payment Ready** - พร้อมระบบชำระเงิน
+## ✨ Key Features
 
-│   ├── config/          # Database & email config- 🏆 **Membership Tiers** - ระบบสิทธิพิเศษ 3 ระดับ
+### 🔍 1. หาที่จอด
+- Real-time availability checking
+- AI-powered auto-selection
+- แสดงรายละเอียดครบถ้วน (ตำแหน่ง, ราคา, สิ่งอำนวยความสะดวก)
 
-│   ├── controllers/     # Business logic- 📱 **Responsive** - ใช้งานได้ทุกอุปกรณ์
+### 📱 2. จองที่จอด
+- **Pay-per-Booking:** 20 บาท/ครั้ง
+- **3 ชั่วโมงแรกฟรี**, เกินคิด 10 บาท/ชม.
+- ต้องเข้าจอดภายใน 30 นาที (ไม่งั้นยกเลิกอัตโนมัติ)
 
-│   ├── models/          # MongoDB schemas- 🚀 **Fast** - Build ด้วย Vite
+### 💳 3. ชำระเงิน
+- หลายช่องทาง: บัตรเครดิต, Mobile Banking, QR Payment
+- คำนวณอัตโนมัติ
+- ใบเสร็จดิจิทัล
 
-│   ├── routes/          # API endpoints- ☁️ **Cloud Ready** - Deploy บน Netlify + MongoDB Atlas (ฟรี!)
+### 🚗 4. เข้า-ออกจอด
+- QR Code verification
+- นับเวลาอัตโนมัติ
+- Alert เมื่อเกิดปัญหา
 
-│   ├── middleware/      # Authentication middleware
+### 👑 5. Membership Tiers (Phase 3)
+- 🥉 **Iron:** ฟรี (ไม่มีส่วนลด)
+- 💎 **Diamond:** 299 ฿/เดือน (ลด 10%)
+- 👹 **Predator:** 599 ฿/เดือน (ลด 15% + Priority)
 
-│   ├── scripts/         # Utility scripts (seed, etc.)## 🎯 Demo
+---
 
-│   ├── index.js         # Express server
+## 🏗️ Project Structure
 
-│   └── package.json     # Backend dependencies**คำตอบคำถาม: ใช่! Deploy บน Netlify กับ MongoDB Atlas ได้แน่นอน**
-
+```
+ise-scipark/
+├── frontend/              # React + Vite Frontend
+│   ├── src/
+│   │   ├── components/   # UI Components
+│   │   ├── pages/        # Pages (Home, Login, Booking, etc.)
+│   │   ├── stores/       # Zustand State Management
+│   │   ├── utils/        # API Client & Helpers
+│   │   └── index.css     # Tailwind CSS
+│   ├── public/           # Static Assets
+│   └── vite.config.js    # Vite Configuration
 │
+├── backend/              # Express + MongoDB Backend
+│   ├── config/          # Database & Email Config
+│   ├── controllers/     # Business Logic
+│   ├── models/          # MongoDB Schemas
+│   ├── routes/          # API Routes
+│   ├── middleware/      # Auth Middleware
+│   └── index.js         # Express Server
+│
+└── docs/                # Documentation
+    ├── BUSINESS-REQUIREMENTS.md  # Business context
+    ├── PROCESS-FLOW.md          # Process diagrams
+    └── EXECUTIVE-SUMMARY.md     # Pitch deck
+```
 
-└── docs/                # Documentationโปรเจคนี้ออกแบบมาเพื่อ Deploy บน Netlify โดยเฉพาะ:
+---
+
+## 💻 Tech Stack
+
+### Frontend
+- **React 18** - UI Library
+- **Vite 5** - Build Tool (⚡ Lightning Fast HMR)
+- **Tailwind CSS 3** - Utility-first CSS
+- **Framer Motion** - Animations
+- **Zustand** - State Management
+- **Axios** - HTTP Client
+- **React Hot Toast** - Notifications
+- **Lucide React** - Icons
+
+### Backend
+- **Express.js 4** - Web Framework
+- **MongoDB Atlas** - Cloud Database
+- **Mongoose** - ODM
+- **JWT** - Authentication
+- **Nodemailer** - Email Service
+- **Brevo** - SMTP Provider
+- **Helmet** - Security
+- **Express Rate Limit** - DDoS Protection
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+- MongoDB Atlas account (ฟรี)
+
+### 1. Clone Repository
+```bash
+git clone https://github.com/Kittamets/ise-scipark.git
+cd ise-scipark
+```
+
+### 2. Setup Backend
+```bash
+cd backend
+npm install
+
+# สร้าง .env
+cp .env.example .env
+# แก้ไข .env ใส่ MongoDB URI และ Email credentials
+
+# Seed database (optional)
+npm run seed
+
+# Start server
+npm start
+# Backend: http://localhost:3000
+```
+
+### 3. Setup Frontend
+```bash
+cd frontend
+npm install
+
+# สร้าง .env
+cp .env.example .env
+# แก้ไข .env ใส่ API URL
+
+# Start dev server
+npm run dev
+# Frontend: http://localhost:5173
+```
+
+### 4. Open Browser
+```
+http://localhost:5173
+```
+
+---
+
+## 🧪 Test Accounts
+
+```
+Email: iron@test.com
+Password: password123
+Tier: Iron (ไม่มีส่วนลด)
+
+Email: diamond@test.com
+Password: password123
+Tier: Diamond (ส่วนลด 10%)
+
+Email: predator@test.com
+Password: password123
+Tier: Predator (ส่วนลด 15%)
+```
+
+---
+
+## 📊 Database Schema
+
+### Users
+- name, email, password (hashed)
+- memberTier (iron/diamond/predator)
+- points, totalSpent
+
+### Parking Zones
+- name, location
+- totalSpots, availableSpots
+- pricePerHour
+
+### Parking Spots
+- spotNumber, zone
+- status (available/occupied/maintenance)
+
+### Bookings
+- user, parkingSpot
+- startTime, endTime
+- status (pending/active/completed/cancelled)
+- totalPrice
+
+### Vehicles
+- user, plateNumber, type
+
+---
+
+## 🌐 API Endpoints
+
+### Authentication
+```
+POST   /api/auth/register      # Register
+POST   /api/auth/login         # Login
+POST   /api/auth/verify-otp    # Verify OTP
+GET    /api/auth/me            # Get current user
+POST   /api/auth/logout        # Logout
+```
+
+### Parking
+```
+GET    /api/parking/zones      # Get all zones
+GET    /api/parking/spots      # Get available spots
+GET    /api/parking/spot/:id   # Get spot details
+```
+
+### Bookings
+```
+POST   /api/bookings           # Create booking
+GET    /api/bookings           # Get user bookings
+GET    /api/bookings/:id       # Get booking details
+PUT    /api/bookings/:id       # Update booking
+DELETE /api/bookings/:id       # Cancel booking
+```
+
+### Vehicles
+```
+POST   /api/vehicles           # Add vehicle
+GET    /api/vehicles           # Get user vehicles
+DELETE /api/vehicles/:id       # Delete vehicle
+```
+
+---
+
+## 🎨 UI Components
+
+- **Gradient Backgrounds** - สวยงามด้วย Tailwind Gradients
+- **Smooth Animations** - Framer Motion
+- **Responsive Design** - Mobile-first
+- **Dark Mode Ready** - เตรียมพร้อม (ยังไม่เปิดใช้งาน)
+- **Toast Notifications** - Real-time feedback
+
+---
+
+## 📈 Future Roadmap
+
+### Phase 3: Advanced Features (Months 5-6)
+- 🤖 AI Prediction (ทำนายความว่าง)
+- 🗺️ Interactive Map
+- 🚗 Multiple Vehicles Support
+- 💳 Monthly Subscription
+- 🎁 Reward Points System
+
+### Phase 4+: Smart Campus (Year 2)
+- 📡 IoT Sensors Integration
+- 📹 CCTV + License Plate Recognition
+- 📊 Parking Analytics Dashboard
+- 🔌 API for Third-party Integration
+- 🌐 Multi-campus Support
+
+---
+
+## 💰 Business Model
+
+### Revenue Streams:
+1. **Booking Fees:** 20 ฿/ครั้ง
+2. **Overtime Fees:** 10 ฿/ชม. (หลัง 3 ชั่วโมง)
+3. **Membership:** 299-599 ฿/เดือน
+4. **Enterprise License:** ขายให้สถาบันอื่น
+
+### Projections:
+- **Year 1:** ~5M บาท
+- **Year 2:** ~15M บาท
+- **Year 3:** ~40M บาท
+
+📊 **[ดูรายละเอียดเพิ่มเติม](docs/EXECUTIVE-SUMMARY.md)**
+
+---
+
+## 🎓 Team & Credits
+
+**Developed by:**
+- 👥 คณะวิทยาศาสตร์ มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี
+- 💻 นิสิต นักพัฒนา นักออกแบบ และอาจารย์ที่ปรึกษา
+- 🤝 Cross-functional Team
+
+**Special Thanks:**
+- GitHub Copilot for development assistance
+- KMUTT for support and resources
+
+---
+
+## 📞 Contact & Support
+
+```
+📧 Email:    scipark@kmutt.ac.th
+🌐 Website:  https://scipark.kmutt.ac.th
+📱 GitHub:   https://github.com/Kittamets/ise-scipark
+📍 Location: คณะวิทยาศาสตร์ มจธ.
+```
+
+---
+
+## 📄 License
+
+MIT License - สามารถนำไปใช้ต่อยอดได้
+
+---
+
+## 🌟 Support This Project
+
+ถ้าคุณชอบโปรเจคนี้:
+- ⭐ **Star** this repo
+- 🍴 **Fork** and contribute
+- 📣 **Share** with others
+- 💬 **Give feedback**
+
+---
+
+**Made with ❤️ by SciPark Team**
+
+> *"Making Parking Smart, One Spot at a Time"*
 
     ├── README.md        # Overview- ✅ Frontend (React) → Netlify Static Hosting
 

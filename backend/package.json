@@ -7,7 +7,18 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "seed": "node scripts/seedDatabase.js",
+    "auto-cancel": "node scripts/autoCancelBookings.js",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:start:prod": "pm2 start ecosystem.config.js --env production",
+    "pm2:stop": "pm2 stop scipark-api",
+    "pm2:restart": "pm2 restart scipark-api",
+    "pm2:reload": "pm2 reload scipark-api",
+    "pm2:delete": "pm2 delete scipark-api",
+    "pm2:logs": "pm2 logs scipark-api",
+    "pm2:monit": "pm2 monit",
+    "pm2:status": "pm2 status"
   },
   "keywords": [],
   "author": "",
@@ -24,7 +35,10 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.1",
     "morgan": "^1.10.1",
+    "node-cron": "^4.2.1",
     "nodemailer": "^7.0.6",
+    "qrcode": "^1.5.4",
+    "redis": "^5.9.0",
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {

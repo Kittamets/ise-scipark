@@ -49,9 +49,9 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// Index for faster queries
-userSchema.index({ email: 1 });
-userSchema.index({ username: 1 });
+// Index already created by unique: true on email and username fields
+// userSchema.index({ email: 1 }); // REMOVED - duplicate
+// userSchema.index({ username: 1 }); // REMOVED - duplicate
 
 // If user model exists, use the existing one otherwise create new one
 const User = mongoose.models.User || mongoose.model("User", userSchema);

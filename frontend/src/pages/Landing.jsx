@@ -246,28 +246,64 @@ const Landing = () => {
       </section>
       
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600">
-        <div className="max-w-4xl mx-auto px-6 text-center text-white">
+      <section className="py-16 sm:py-20 bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center text-white">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="space-y-6"
+            className="space-y-6 sm:space-y-8"
           >
-            <h2 className="text-6xl font-bold">พร้อมที่จะเริ่มต้นแล้วหรือยัง?</h2>
-            <p className="text-3xl font-semibold">เริ่มต้นใช้งานฟรีวันนี้</p>
-            <Link to="/register">
-              <Button 
-                variant="secondary" 
-                size="lg"
-                className="bg-white text-orange-600 hover:bg-gray-50 hover:scale-110"
-              >
-                ลงทะเบียนเลย
-              </Button>
-            </Link>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight px-4">
+              พร้อมที่จะเริ่มต้น
+              <br className="sm:hidden" />
+              แล้วหรือยัง?
+            </h2>
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold px-4">
+              เริ่มต้นใช้งานฟรีวันนี้
+            </p>
+            <div className="flex justify-center px-4">
+              <Link to="/register" className="inline-block w-full max-w-xs">
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="w-full bg-white text-orange-600 hover:bg-gray-50 font-bold text-base sm:text-lg px-8 sm:px-10 py-3.5 sm:py-4 rounded-2xl shadow-2xl hover:shadow-orange-900/30 transition-all duration-300"
+                >
+                  ลงทะเบียนเลย
+                </motion.button>
+              </Link>
+            </div>
           </motion.div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Car className="w-8 h-8 text-orange-500" />
+              <span className="text-2xl font-bold">SciPark</span>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-400">
+              <Link to="/terms" className="hover:text-white transition-colors">
+                เงื่อนไขการใช้งาน
+              </Link>
+              <span>•</span>
+              <Link to="/privacy" className="hover:text-white transition-colors">
+                นโยบายความเป็นส่วนตัว
+              </Link>
+              <span>•</span>
+              <a href="mailto:support@scipark.com" className="hover:text-white transition-colors">
+                ติดต่อเรา
+              </a>
+            </div>
+            <p className="text-sm text-gray-400">
+              © 2024 SciPark. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

@@ -6,6 +6,8 @@ import {
   cancelBooking,
   getBookingHistory,
   updateBookingStatus,
+  checkIn,
+  checkOut,
 } from "../controllers/bookingController.js";
 import { authenticateUser } from "../middleware/userAuth.js";
 
@@ -23,7 +25,13 @@ router.get("/active", getActiveBooking);
 // Get booking history
 router.get("/history", getBookingHistory);
 
-// Complete booking
+// Check-in to booking
+router.put("/:bookingId/checkin", checkIn);
+
+// Check-out from booking
+router.put("/:bookingId/checkout", checkOut);
+
+// Complete booking (legacy)
 router.put("/:id/complete", completeBooking);
 
 // Cancel booking
