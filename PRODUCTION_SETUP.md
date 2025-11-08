@@ -569,7 +569,7 @@ Congratulations! Your SciPark application is now live! 🎉
 
 ---
 
-**Deployed By**: AI Assistant  
+**Deployed By**: Nattawut Chaturaponkul  
 **Deployment Date**: November 8, 2025  
 **Version**: 1.0.0  
 **Status**: 🟢 Production Ready
