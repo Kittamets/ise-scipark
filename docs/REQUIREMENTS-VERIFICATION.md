@@ -628,7 +628,7 @@ Predator (599฿):   15% ส่วนลด
 
 ---
 
-**Prepared by:** GitHub Copilot  
+**Prepared by:** Nattawut Chaturaponkul  
 **Date:** November 8, 2025  
 **Version:** 2.0 ✅  
 **Status:** 🎉 **100% Complete - Ready for Production!**
