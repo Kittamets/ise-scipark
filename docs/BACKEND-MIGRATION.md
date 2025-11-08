@@ -616,4 +616,4 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 
 **Last Updated:** 2024
 **Version:** 1.0.0
-**Author:** GitHub Copilot
+**Author:** Nattawut Chaturaponkul
