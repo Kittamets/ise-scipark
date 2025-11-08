@@ -328,7 +328,7 @@ VITE v5.4.21  ready in 535 ms
 
 ---
 
-**Verified by:** GitHub Copilot  
+**Verified by:** Nattawut Chaturaponkul  
 **Date:** 8 พฤศจิกายน 2568  
 **Time:** 17:56 ICT
 
