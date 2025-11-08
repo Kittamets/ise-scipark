@@ -717,7 +717,7 @@ This project is licensed under the MIT License.
 
 ## 👨‍💻 Author
 
-**Kittamets**
+**Kittamets, Nattawut, Pacharapon**
 - GitHub: [@Kittamets](https://github.com/Kittamets)
 
 ---
