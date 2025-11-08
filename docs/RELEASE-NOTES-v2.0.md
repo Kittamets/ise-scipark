@@ -379,7 +379,7 @@ v2.0 เป็น **backward compatible** กับ v1.0
 **Issues?** 
 - Check `backend/docs/AUTO-CANCEL-SYSTEM.md`
 - Check `docs/REQUIREMENTS-VERIFICATION.md`
-- Contact: scipark@kmutt.ac.th
+- Contact: 66050146@kmitl.ac.th
 
 ---
 
