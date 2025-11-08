@@ -644,7 +644,7 @@ cd ise-scipark
 
 ---
 
-**พัฒนาโดย:** GitHub Copilot  
+**พัฒนาโดย:** Nattawut Chaturaponkul  
 **สถานะ:** ✅ **Production Ready**  
 **วันที่:** 8 พฤศจิกายน 2568
 
