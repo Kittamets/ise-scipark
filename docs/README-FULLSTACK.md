@@ -291,12 +291,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 This project is licensed under the MIT License.
 
-## 👨‍💻 Author
-
-**SciPark Team**
-- Website: [scipark.app](https://scipark.app)
-- GitHub: [@scipark](https://github.com/scipark)
-
 ## 🙏 Acknowledgments
 
 - Icons by [Lucide Icons](https://lucide.dev)
