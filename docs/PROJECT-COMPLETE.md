@@ -473,11 +473,6 @@ Total Functions: 100+ functions
 - [QUICKSTART.md](./QUICKSTART.md) - Quick start
 - [Backend README](./netlify/functions/README.md) - API documentation
 
-### Community
-- GitHub Issues: Report bugs
-- GitHub Discussions: Ask questions
-- Pull Requests: Contribute code
-
 ---
 
 ## 🌟 Show Your Support
