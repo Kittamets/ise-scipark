@@ -440,7 +440,7 @@ After deployment:
 
 ---
 
-**Package Created By**: GitHub Copilot  
+**Package Created By**: Nattawut Chaturaponkul  
 **Date**: November 8, 2025  
 **Version**: 1.0.0  
 **Status**: ✅ Production Ready  
